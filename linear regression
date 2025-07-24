@@ -1,0 +1,56 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.datasets import fetch_california_housing
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Load dataset from scikit-learn
+housing = fetch_california_housing()
+df = pd.DataFrame(housing.data, columns=housing.feature_names)
+
+# Add target column manually
+df['target'] = housing.target
+
+# Preview data
+print("First 5 rows of the dataset:")
+print(df.head())
+
+# Select feature and target
+X = df[['AveRooms']]
+y = df['target']
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train Linear Regression model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Show coefficients
+print(f"\nIntercept:\n{model.intercept_}")
+print(f"\nCoefficient:\n{model.coef_}")
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Show sample predictions
+predictions = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+print("\nSample Predictions:")
+print(predictions.head())
+
+# Plot actual vs predicted
+plt.scatter(X_test, y_test, color='blue', label='Actual Data')
+plt.plot(X_test, y_pred, color='red', label='Regression Line')
+plt.xlabel('Average Rooms')
+plt.ylabel('House Price ($1000s)')
+plt.title('Simple Linear Regression')
+plt.legend()
+plt.show()
+
+# Metrics
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+print(f"\nMean Squared Error: {mse:.4f}")
+print(f"R-Squared Score: {r2:.4f}")
